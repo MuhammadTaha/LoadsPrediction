@@ -69,29 +69,6 @@ def load_data(stock, seq_len):
 
     return x_train, y_train,x_test,y_test
 
-# def build_model(layers):
-#     model = Sequential()
-#
-#     model.add(LSTM(
-#         input_dim=layers[0],
-#         output_dim=layers[1],
-#         return_sequences=True))
-#     model.add(Dropout(0.2))
-#
-#     model.add(LSTM(
-#         layers[2],
-#         return_sequences=False))
-#     model.add(Dropout(0.2))
-#
-#     model.add(Dense(
-#         output_dim=layers[2]))
-#     model.add(Activation("linear"))
-#
-#     start = time.time()
-#     model.compile(loss="mse", optimizer="rmsprop",metrics=['accuracy'])
-#     print("Compilation Time : ", time.time() - start)
-#     return model
-
 def build_model2(layers):
         d = 0.2
         model = Sequential()
@@ -107,7 +84,6 @@ def build_model2(layers):
 
 
 window = 5
-# load_data(df[::-1], window)
 X_train, y_train, X_test, y_test = load_data(df[::-1], window)
 print("X_train", X_train.shape)
 print("y_train", y_train.shape)
