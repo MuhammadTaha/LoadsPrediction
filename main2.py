@@ -13,7 +13,6 @@ from keras.models import Sequential
 from keras.layers.core import Dense, Dropout, Activation
 from keras.layers.recurrent import LSTM
 import matplotlib.pyplot as plt2
-from sklearn.model_selection import train_test_split
 
 def get_data(normalized=0):
 
@@ -42,32 +41,18 @@ def load_data(stock, seq_len):
     row = round(0.8 * result.shape[0])
     # print(row)
     train = result[:int(row), :]
-    train,test = train_test_split(result)
-    print (train)
     print("dfsdfd")
     print(len(train))
     x_train = train[:, :-1]
-    y_train = train[:, :-1][:, -1]
     print(x_train)
-    print('y_train')
-    print(y_train)
-    print('test')
-    # print(test)
-    # y_train = train[:, -1][:, -1]
-    x_test = test[:, :-1]
-    y_test = test[:, :-1][:, -1]
-    print(x_test)
-    print('dsfsdfdsf')
-    print(y_test)
-    #
+    y_train = train[:, -1][:, -1]
+    x_test = result[int(row):, :-1]
+    y_test = result[int(row):, -1][:, -1]
+
     x_train = np.reshape(x_train, (x_train.shape[0], x_train.shape[1], amount_of_features))
-    y_train = np.reshape(y_train, (y_train.shape[0], y_train.shape[1], amount_of_features))
-
     x_test = np.reshape(x_test, (x_test.shape[0], x_test.shape[1], amount_of_features))
-    y_test = np.reshape(y_test, (y_test.shape[0], y_test.shape[1], amount_of_features))
 
-
-    return x_train, y_train,x_test,y_test
+    return [x_train, y_train, x_test, y_test]
 
 # def build_model(layers):
 #     model = Sequential()
@@ -105,37 +90,33 @@ def build_model2(layers):
         return model
 
 
-
 window = 5
-# load_data(df[::-1], window)
 X_train, y_train, X_test, y_test = load_data(df[::-1], window)
 print("X_train", X_train.shape)
 print("y_train", y_train.shape)
 print("X_test", X_test.shape)
 print("y_test", y_test.shape)
-#
+
 model = build_model2([3,window,1])
-#
+
 trainScore = model.evaluate(X_train, y_train, verbose=0)
 print('Train Score: %.2f MSE (%.2f RMSE)' % (trainScore[0], math.sqrt(trainScore[0])))
-#
+
 testScore = model.evaluate(X_test, y_test, verbose=0)
 print('Test Score: %.2f MSE (%.2f RMSE)' % (testScore[0], math.sqrt(testScore[0])))
-#
-#
-# p = model.predict(X_test)
-#
-# plt2.plot(p,color='red', label='prediction')
-# plt2.plot(y_test,color='blue', label='y_test')
-# plt2.legend(loc='upper left')
-# plt2.show()
+
+
+p = model.predict(X_test)
+# for u in range(len(y_test)):
+#     pr = p[u][0]
+#     ratio.append((y_test[u]/pr)-1)
+#     diff.append(abs(y_test[u]- pr))
+    #print(u, y_test[u], pr, (y_test[u]/pr)-1, abs(y_test[u]- pr))
 
 
 
 
-
-
-
-
-
-
+plt2.plot(p,color='red', label='prediction')
+plt2.plot(y_test,color='blue', label='y_test')
+plt2.legend(loc='upper left')
+plt2.show()
