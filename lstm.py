@@ -67,7 +67,7 @@ trainX = np.reshape(trainX, (trainX.shape[0], 1, trainX.shape[1]))
 testX = np.reshape(testX, (testX.shape[0], 1, testX.shape[1]))
 
 model.fit(trainX, y_train,
-          batch_size=64, epochs=4)
+          batch_size=64, epochs=20)
 
 trainScore = model.evaluate(trainX,y_train , verbose=0)
 print('Train Score: %.2f MSE (%.2f RMSE)' % (trainScore[0], math.sqrt(trainScore[0])))
@@ -81,22 +81,12 @@ plt2.subplot(2, 1, 1)
 
 plt2.axis((0,100,0,30))
 val = np.array(p)
-val = np.array(p)
-# print(val)
-# for v in val:
-#     for i in range(len(v)):
-#         if(i == 0 ):
-#             plt2.plot(v[0],color='red', label='PercentageTripperHour')
-#         elif (i == 1):
-#             plt2.plot(v[1], color='red', label='HourofDay')
-#         elif (i == 2):
-#             plt2.plot(v[2], color='red', label='Day/Night')
-#         elif (i == 3):
-#             plt2.plot(v[3], color='red', label='Precipitation')
+print(p)
 plt2.plot(np.array(p),color='red', label='prediction')
 
 plt2.plot(np.array(y_test),color='blue', label='test')
-
+plt2.xlabel('no of tuples')
+plt2.title('Modal evalution and prediction using Test Data')
 plt2.legend(loc='upper right')
 
 
@@ -107,21 +97,16 @@ both = 53.6 + 53.6 + 53 + 35.4 + 35.4
 day  = 45.8 + both
 night = 112.4 + 127.8 + 7.4 + 19.2+ 14.4 + 4.8 + both
 
-
-# arr = np.arange(0,23)
+#
 plt2.subplot(2, 1, 2)
 for v in val:
     for i in range(len(v)):
         if(i == 2 ):
             if(v[i] >= 0.5):
                 pSum = (both+day)*(v[0]/100) * 11.1 * 0.22194
-                # print ("power consumed at  Day time:" , pSum)
-                # arr[math.ceil(v[1])] = arr.append(pSum)
                 plt2.plot(math.ceil(v[1]), pSum,'.-')
             else:
                 pSum = (both+night)*(v[0]/100) * 11.1 * 0.22194
-                # print ("power consumed at Night time:" ,pSum)
-                # arr[math.ceil(v[1])] = arr.append(pSum)
                 plt2.plot(math.ceil(v[1]),pSum, '.-')
 
 
@@ -134,19 +119,11 @@ plt2.subplot(2, 2, 2)
 for v in val:
     for i in range(len(v)):
         if(i == 3 ):
-            # if(v[i] >= 0.5):
                 pSum = 40*(v[0]/100) * 11.1 * 0.22194 * v[i]
-                # print ("power consumed at  Day time:" , pSum)
-                # arr[math.ceil(v[1])] = arr.append(pSum)
+
                 plt2.plot(math.ceil(v[1]), pSum,'.-')
-            # else:
-            #     pSum = (both+night)*(v[0]/100) * 11.1 * 0.22194
-            #     # print ("power consumed at Night time:" ,pSum)
-            #     # arr[math.ceil(v[1])] = arr.append(pSum)
-            #     plt2.plot(math.ceil(v[1]),pSum, '.-')
 
 # precipitation
-# plt2.plot(arr, '.-')
 plt2.xlabel('Time(hours)')
 plt2.ylabel('Power consumed')
 plt2.title("Screen Wiper")
