@@ -112,7 +112,7 @@ for v in val:
 
 # plt2.plot(arr, '.-')
 plt2.xlabel('time (hours)')
-plt2.ylabel('Power consumed')
+plt2.ylabel('Power consumed(kwh)')
 plt2.title("Lights")
 
 plt2.subplot(2, 2, 2)
@@ -125,7 +125,7 @@ for v in val:
 
 # precipitation
 plt2.xlabel('Time(hours)')
-plt2.ylabel('Power consumed')
+plt2.ylabel('Power consumed(kwh)')
 plt2.title("Screen Wiper")
 
 plt2.show()
