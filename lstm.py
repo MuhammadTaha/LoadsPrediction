@@ -29,8 +29,8 @@ def get_data(normalized=0):
     stocks = pd.read_csv(r"Dataset_Daylight_Rainfall_Berlin4.csv", header=0)
 
     df = pd.DataFrame(stocks)
-    df['RelativeFrequency'] = df['RelativeFrequency'] * 10;
-    df['PercentageTripperHour'] = df['PercentageTripperHour'] * 10;
+    df['RelativeFrequency'] = df['RelativeFrequency'] ;
+    df['PercentageTripperHour'] = df['PercentageTripperHour'];
     df['HourofDay'] = pd.to_datetime(df['HourofDay'],format= '%H:%M:%S' ).dt.hour;
 
     print(df.columns)
@@ -83,7 +83,7 @@ model.add(LSTM(32, return_sequences=True,
                input_shape=(1, data_dim)))  # returns a sequence of vectors of dimension 32
 model.add(LSTM(32, return_sequences=True))  # returns a sequence of vectors of dimension 32
 model.add(LSTM(32))  # return a single vector of dimension 32
-model.add(Dense(1, activation='softmax'))
+model.add(Dense(2, activation='softmax'))
 
 model.compile(loss='mean_squared_error',
               optimizer='rmsprop',
