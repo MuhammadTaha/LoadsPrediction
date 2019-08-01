@@ -13,6 +13,8 @@ import numpy as np
 import pandas as pd
 from sklearn.model_selection import train_test_split
 from keras.utils import to_categorical
+import matplotlib.pyplot as plt2
+
 
 data_dim = 16
 timesteps = 8
@@ -86,13 +88,24 @@ model.compile(loss='binary_crossentropy',
 # result = model.evaluate(x_val,y_val)
 
 trainX = np.array(x_train)
+print(trainX)
 testX = np.array(x_test)
 
 trainX = np.reshape(trainX, (trainX.shape[0], 1, trainX.shape[1]))
 testX = np.reshape(testX, (testX.shape[0], 1, testX.shape[1]))
+print('sdfsdfd')
+print(y_test)
 
+print(y_train)
 model.fit(trainX, y_train,
-          batch_size=64, epochs=5)
+          batch_size=64, epochs=20)
 result = model.evaluate(testX,y_test)
 
 print('test: ', result)
+
+p = model.predict(testX)
+
+plt2.plot(p,color='red', label='prediction')
+plt2.plot(y_test,color='blue', label='y_test')
+plt2.legend(loc='upper right')
+plt2.show()
