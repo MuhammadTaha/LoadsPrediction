@@ -14,7 +14,7 @@ num_classes = 10
 
 def get_data(normalized=0):
 
-    col_names = ['Date', 'Day_No','NumberTripsperday','RelativeFrequency','1_or_0','PercentageTripperHour','HourofDay']
+    col_names = ['Date', 'Day_No','NumberTripsperday','RelativeFrequency','1_or_0','PercentageTripperHour','HourofDay','Precipitation']
     stocks = pd.read_csv(r"Dataset_Daylight_Rainfall_Berlin4.csv", header=0)
 
     df = pd.DataFrame(stocks)
@@ -39,11 +39,11 @@ print('Training Observations: %d' % (len(train)))
 print('Testing Observations: %d' % (len(test)))
 
 
-x_train = train.iloc[:,:-2]
-y_train = train.iloc[:,-2:]
+x_train = train.iloc[:,:-4]
+y_train = train.iloc[:,-4:]
 
-x_test = test.iloc[:,:-2]
-y_test = test.iloc[:,-2:]
+x_test = test.iloc[:,:-4]
+y_test = test.iloc[:,-4:]
 
 
 data_dim =  x_train.shape[1] #number of input features
@@ -54,14 +54,12 @@ model.add(LSTM(32, return_sequences=True,
                input_shape=(1, data_dim)))  # returns a sequence of vectors of dimension 32
 model.add(LSTM(32, return_sequences=True))  # returns a sequence of vectors of dimension 32
 model.add(LSTM(32))  # return a single vector of dimension 32
-model.add(Dense(2))
+model.add(Dense(4))
 model.add(Activation("linear"))
 
 model.compile(loss='mean_squared_error',
               optimizer='rmsprop',
               metrics=['accuracy'])
-
-
 
 trainX = np.array(x_train)
 testX = np.array(x_test)
@@ -69,7 +67,7 @@ trainX = np.reshape(trainX, (trainX.shape[0], 1, trainX.shape[1]))
 testX = np.reshape(testX, (testX.shape[0], 1, testX.shape[1]))
 
 model.fit(trainX, y_train,
-          batch_size=64, epochs=20)
+          batch_size=64, epochs=4)
 
 trainScore = model.evaluate(trainX,y_train , verbose=0)
 print('Train Score: %.2f MSE (%.2f RMSE)' % (trainScore[0], math.sqrt(trainScore[0])))
@@ -79,11 +77,79 @@ print('Test Score: %.2f MSE (%.2f RMSE)' % (testScore[0], math.sqrt(testScore[0]
 
 p = model.predict(testX)
 
-plt2.axis((0,100,0,30))
+plt2.subplot(2, 1, 1)
 
+plt2.axis((0,100,0,30))
+val = np.array(p)
+val = np.array(p)
+# print(val)
+# for v in val:
+#     for i in range(len(v)):
+#         if(i == 0 ):
+#             plt2.plot(v[0],color='red', label='PercentageTripperHour')
+#         elif (i == 1):
+#             plt2.plot(v[1], color='red', label='HourofDay')
+#         elif (i == 2):
+#             plt2.plot(v[2], color='red', label='Day/Night')
+#         elif (i == 3):
+#             plt2.plot(v[3], color='red', label='Precipitation')
 plt2.plot(np.array(p),color='red', label='prediction')
 
 plt2.plot(np.array(y_test),color='blue', label='test')
 
 plt2.legend(loc='upper right')
+
+
+
+# Power calculation
+
+both = 53.6 + 53.6 + 53 + 35.4 + 35.4
+day  = 45.8 + both
+night = 112.4 + 127.8 + 7.4 + 19.2+ 14.4 + 4.8 + both
+
+
+# arr = np.arange(0,23)
+plt2.subplot(2, 1, 2)
+for v in val:
+    for i in range(len(v)):
+        if(i == 2 ):
+            if(v[i] >= 0.5):
+                pSum = (both+day)*(v[0]/100) * 11.1 * 0.22194
+                # print ("power consumed at  Day time:" , pSum)
+                # arr[math.ceil(v[1])] = arr.append(pSum)
+                plt2.plot(math.ceil(v[1]), pSum,'.-')
+            else:
+                pSum = (both+night)*(v[0]/100) * 11.1 * 0.22194
+                # print ("power consumed at Night time:" ,pSum)
+                # arr[math.ceil(v[1])] = arr.append(pSum)
+                plt2.plot(math.ceil(v[1]),pSum, '.-')
+
+
+# plt2.plot(arr, '.-')
+plt2.xlabel('time (hours)')
+plt2.ylabel('Power consumed')
+plt2.title("Lights")
+
+plt2.subplot(2, 2, 2)
+for v in val:
+    for i in range(len(v)):
+        if(i == 3 ):
+            # if(v[i] >= 0.5):
+                pSum = 40*(v[0]/100) * 11.1 * 0.22194 * v[i]
+                # print ("power consumed at  Day time:" , pSum)
+                # arr[math.ceil(v[1])] = arr.append(pSum)
+                plt2.plot(math.ceil(v[1]), pSum,'.-')
+            # else:
+            #     pSum = (both+night)*(v[0]/100) * 11.1 * 0.22194
+            #     # print ("power consumed at Night time:" ,pSum)
+            #     # arr[math.ceil(v[1])] = arr.append(pSum)
+            #     plt2.plot(math.ceil(v[1]),pSum, '.-')
+
+# precipitation
+# plt2.plot(arr, '.-')
+plt2.xlabel('Time(hours)')
+plt2.ylabel('Power consumed')
+plt2.title("Screen Wiper")
+
 plt2.show()
+
