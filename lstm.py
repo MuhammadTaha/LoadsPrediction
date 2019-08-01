@@ -1,7 +1,7 @@
 
 
 from keras.models import Sequential
-from keras.layers import LSTM, Dense,TimeDistributed,Activation, Dropout
+from keras.layers import LSTM, Dense,Activation, Dropout
 import numpy as np
 import pandas as pd
 from keras.utils import to_categorical
@@ -45,14 +45,8 @@ y_train = train.iloc[:,-2:]
 x_test = test.iloc[:,:-2]
 y_test = test.iloc[:,-2:]
 
-print ('x train head', x_train.head())
-print ('y train head', y_train.head())
-
-print ('x test head', x_test.head())
-print ('y test head', y_test.head())
 
 data_dim =  x_train.shape[1] #number of input features
-print('data_dim', data_dim)
 
 # # expected input data shape: (batch_size, timesteps, data_dim)
 model = Sequential()
@@ -71,14 +65,9 @@ model.compile(loss='mean_squared_error',
 
 trainX = np.array(x_train)
 testX = np.array(x_test)
-print(testX)
-print('shape', trainX.shape[0],trainX.shape[1])
 trainX = np.reshape(trainX, (trainX.shape[0], 1, trainX.shape[1]))
 testX = np.reshape(testX, (testX.shape[0], 1, testX.shape[1]))
-print('sdfsdfd')
-print(y_test)
 
-print(y_train)
 model.fit(trainX, y_train,
           batch_size=64, epochs=20)
 
@@ -87,27 +76,13 @@ print('Train Score: %.2f MSE (%.2f RMSE)' % (trainScore[0], math.sqrt(trainScore
 #
 testScore = model.evaluate(testX, y_test, verbose=0)
 print('Test Score: %.2f MSE (%.2f RMSE)' % (testScore[0], math.sqrt(testScore[0])))
-#
-# print('test: ', testScore)
-#
-# print(model.predict(testX))
-#
-# print (model.predict_classes(testX))
-#
-# print (model.predict_proba(testX))
 
-# print('test: ', testScore)
-# print('result shape',np.shape(testScore))
-# print('y_test', y_test);
 p = model.predict(testX)
-# print('p', p)
-# x1,x2,y1,y2 = plt2.axis()
+
 plt2.axis((0,100,0,30))
-# print(p[0])
-# plt2.plot(p,color='red', label='prediction')
+
 plt2.plot(np.array(p),color='red', label='prediction')
 
-# plt2.plot(y_test,color='blue', label='test')
 plt2.plot(np.array(y_test),color='blue', label='test')
 
 plt2.legend(loc='upper right')
