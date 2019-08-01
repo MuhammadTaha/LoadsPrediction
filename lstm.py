@@ -8,7 +8,7 @@ Original file is located at
 """
 
 from keras.models import Sequential
-from keras.layers import LSTM, Dense
+from keras.layers import LSTM, Dense,TimeDistributed,Activation, Dropout
 import numpy as np
 import pandas as pd
 from sklearn.model_selection import train_test_split
@@ -24,13 +24,13 @@ num_classes = 10
 def get_data(normalized=0):
     # col_names = ['Date','Sunrise','Sunset','Daylength','HourofDay','HourNumber','Day','Day_No','RelativeFrequency','PercentageTripperHour','Numberoftripsperhour','Day_or_Night','1_or_0']
     # col_names = ['Date', 'Sunrise', 'Sunset', 'Daylength', 'HourofDay', 'HourNumber', 'Day_No.','NumberTripsperday']
-    col_names = ['Date', 'Day_No','NumberTripsperday','RelativeFrequency','PercentageTripperHour','1_or_0','HourofDay']
+    col_names = ['Date', 'Day_No','NumberTripsperday','RelativeFrequency','1_or_0','PercentageTripperHour','HourofDay']
     # stocks = pd.read_csv(r"drive/My Drive/sample.csv", header=0)
     stocks = pd.read_csv(r"Dataset_Daylight_Rainfall_Berlin4.csv", header=0)
 
     df = pd.DataFrame(stocks)
-    df['RelativeFrequency'] = df['RelativeFrequency'] ;
-    df['PercentageTripperHour'] = df['PercentageTripperHour'];
+    df['RelativeFrequency'] = df['RelativeFrequency']*100 ;
+    df['PercentageTripperHour'] = df['PercentageTripperHour']*100;
     df['HourofDay'] = pd.to_datetime(df['HourofDay'],format= '%H:%M:%S' ).dt.hour;
 
     print(df.columns)
@@ -83,12 +83,12 @@ model.add(LSTM(32, return_sequences=True,
                input_shape=(1, data_dim)))  # returns a sequence of vectors of dimension 32
 model.add(LSTM(32, return_sequences=True))  # returns a sequence of vectors of dimension 32
 model.add(LSTM(32))  # return a single vector of dimension 32
-model.add(Dense(2, activation='softmax'))
+model.add(Dense(2))
+model.add(Activation("linear"))
 
 model.compile(loss='mean_squared_error',
               optimizer='rmsprop',
-              metrics=['accuracy']
-              )
+              metrics=['accuracy'])
 
 # model.fit(x_train, y_train,
 #           batch_size=64, epochs=5,
@@ -106,7 +106,7 @@ print(y_test)
 
 print(y_train)
 model.fit(trainX, y_train,
-          batch_size=64, epochs=8)
+          batch_size=64, epochs=4)
 
 # result = model.evaluate(testX,y_test)
 
@@ -124,12 +124,20 @@ print(model.predict(testX))
 print (model.predict_classes(testX))
 
 print (model.predict_proba(testX))
+
 print('test: ', testScore)
 print('result shape',np.shape(testScore))
-
+print('y_test', y_test);
 p = model.predict(testX)
-print('result', p)
+print('p', p)
+x1,x2,y1,y2 = plt2.axis()
+# plt2.axis((0,2000,0,30))
+print(p[0])
 plt2.plot(p,color='red', label='prediction')
-plt2.plot(y_test,color='blue', label='y_test')
+# plt2.plot(np.array(p),color='red',linestyle='dashed', label='prediction')
+
+plt2.plot(y_test,color='blue', label='test')
+# plt2.plot(np.array(y_test),color='blue',linestyle='dashed', label='test')
+
 plt2.legend(loc='upper right')
 plt2.show()
